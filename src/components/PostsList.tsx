@@ -22,6 +22,7 @@ function PostList({ isPosting, onStopPosting }) {
           <NewPost
             onSomethingChange={somethingChangeHandler}
             onNameChange={nameChangeHandler}
+            onCancel={onStopPosting}
           />
         </Modal>
       ) : null}
