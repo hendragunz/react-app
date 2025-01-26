@@ -1,10 +1,9 @@
+import { useState } from "react";
 import Post from "./Post";
 import Modal from "./Modal";
 import NewPost from "./NewPost";
 
-import { useState } from "react";
-
-function PostList() {
+function PostList({ isPosting, onStopPosting }) {
   const [enteredSomething, setEnteredSomething] = useState("");
   const [enteredName, setEnteredName] = useState("");
 
@@ -18,12 +17,14 @@ function PostList() {
 
   return (
     <>
-      <Modal>
-        <NewPost
-          onSomethingChange={somethingChangeHandler}
-          onNameChange={nameChangeHandler}
-        />
-      </Modal>
+      {isPosting ? (
+        <Modal onClose={onStopPosting} >
+          <NewPost
+            onSomethingChange={somethingChangeHandler}
+            onNameChange={nameChangeHandler}
+          />
+        </Modal>
+      ) : null}
 
       <hr />
 
