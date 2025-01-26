@@ -1,22 +1,29 @@
-import Post from "./Post"
-import NewPost from "./NewPost"
-import { useState } from "react"
+import Post from "./Post";
+import Modal from "./Modal";
+import NewPost from "./NewPost";
+
+import { useState } from "react";
 
 function PostList() {
-  const [enteredSomething, setEnteredSomething] = useState('')
-  const [enteredName, setEnteredName] = useState('')
+  const [enteredSomething, setEnteredSomething] = useState("");
+  const [enteredName, setEnteredName] = useState("");
 
   function somethingChangeHandler(event) {
-    setEnteredSomething(event.target.value)
+    setEnteredSomething(event.target.value);
   }
 
   function nameChangeHandler(event) {
-    setEnteredName(event.target.value)
+    setEnteredName(event.target.value);
   }
 
   return (
     <>
-      <NewPost onSomethingChange={somethingChangeHandler} onNameChange={nameChangeHandler} />
+      <Modal>
+        <NewPost
+          onSomethingChange={somethingChangeHandler}
+          onNameChange={nameChangeHandler}
+        />
+      </Modal>
 
       <hr />
 
@@ -30,7 +37,7 @@ function PostList() {
         <Post name="Papi" something="Suka banget touring dan jalan jalan" />
       </div>
     </>
-  )
+  );
 }
 
-export default PostList
+export default PostList;
