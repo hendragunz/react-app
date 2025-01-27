@@ -1,18 +1,36 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { PostRecord } from "../types";
 import Post from "./Post";
 import Modal from "./Modal";
 import NewPost from "./NewPost";
 
 function PostList({ isPosting, onStopPosting }) {
-  const [enteredSomething, setEnteredSomething] = useState("");
-  const [enteredName, setEnteredName] = useState("");
+  const [posts, setPosts] = useState<PostRecord[]>([]);
+  const [isFetching, setIsFetching] = useState<Boolean>(false);
 
-  function somethingChangeHandler(event) {
-    setEnteredSomething(event.target.value);
-  }
+  useEffect(() => {
+    async function fetchPosts() {
+      setIsFetching(true);
+      const response = await fetch("http://localhost:8080/posts");
+      const resData = await response.json();
+      setPosts(resData.posts);
+      setIsFetching(false);
+    }
 
-  function nameChangeHandler(event) {
-    setEnteredName(event.target.value);
+    fetchPosts()
+  }, []);
+
+  function addPostHandler(postData: PostRecord) {
+    console.log(postData);
+
+    fetch('http://localhost:8080/posts', {
+      method: 'POST',
+      body: JSON.stringify(postData),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    setPosts((existingPosts) => [postData, ...existingPosts]);
   }
 
   return (
@@ -20,24 +38,37 @@ function PostList({ isPosting, onStopPosting }) {
       {isPosting ? (
         <Modal onClose={onStopPosting} >
           <NewPost
-            onSomethingChange={somethingChangeHandler}
-            onNameChange={nameChangeHandler}
             onCancel={onStopPosting}
+            onAddPost={addPostHandler}
           />
         </Modal>
       ) : null}
 
       <hr />
 
-      <div className="grid grid-cols-4 gap-4 mt-5">
-        <Post name={enteredName} something={enteredSomething} />
-        <Post name="Hendra" something="React.js is awesome!" />
-        <Post name="Jason" something="Suka main game" />
-        <Post name="Justin" something="Suka banget nangis" />
-        <Post name="Tikus" something="suka gigit kabel" />
-        <Post name="Anjing" something="Suka rusuh di rumah" />
-        <Post name="Papi" something="Suka banget touring dan jalan jalan" />
-      </div>
+      {!isFetching && posts.length > 0 && (
+        <div className="grid grid-cols-4 gap-4 mt-5">
+          {posts.map((post) => <Post key={post.id} name={post.name} something={post.something} />)}
+        </div>
+      )}
+
+      {!isFetching && posts.length === 0 && (
+        <div className="grid grid-cols-4 gap-4 mt-5">
+          <div>
+            <h2>There are no posts yet.</h2>
+            <p>Start adding post!</p>
+          </div>
+        </div>
+      )}
+
+      {isFetching && (
+        <div className="grid grid-cols-4 gap-4 mt-5">
+          <div>
+            <h2>Loading post data</h2>
+            <p>Please wait....</p>
+          </div>
+        </div>
+      )}
     </>
   );
 }
