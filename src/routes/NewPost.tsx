@@ -1,34 +1,11 @@
-import { useState } from "react"
-import { Link } from "react-router-dom"
-import { PostRecord } from "../types"
+import { Link, Form, redirect } from "react-router-dom"
 import Modal from "../components/Modal"
 
-function NewPost({ onCancel, onAddPost }) {
-  const [enteredSomething, setEnteredSomething] = useState("")
-  const [enteredName, setEnteredName] = useState("")
-
-  function somethingChangeHandler(event: React.SyntheticEvent<EventTarget>) {
-    setEnteredSomething(event.target.value)
-  }
-
-  function nameChangeHandler(event: React.SyntheticEvent<EventTarget>) {
-    setEnteredName(event.target.value)
-  }
-
-  function submitHandler(event: React.SyntheticEvent<EventTarget>) {
-    event.preventDefault()
-    const postData: PostRecord = {
-      name: enteredName,
-      something: enteredSomething
-    }
-    onAddPost(postData)
-    onCancel()
-  }
-
+function NewPost() {
   return (
     <Modal>
       <div className="mx-auto max-w-2xl border-1 rounded-md p-5 outline-gray-300 bg-purple-300">
-        <form className="" onSubmit={submitHandler}>
+        <Form method="post">
           <div className="space-y-12">
             <div className="">
               <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
@@ -42,7 +19,6 @@ function NewPost({ onCancel, onAddPost }) {
                   <div className="mt-2">
                     <input
                       type="text"
-                      onChange={nameChangeHandler}
                       name="name"
                       id="postName"
                       className="block w-full bg-white rounded-md py-1.5 px-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -63,7 +39,6 @@ function NewPost({ onCancel, onAddPost }) {
                       name="something"
                       id="postSomething"
                       rows={3}
-                      onChange={somethingChangeHandler}
                       className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                     ></textarea>
                   </div>
@@ -79,7 +54,6 @@ function NewPost({ onCancel, onAddPost }) {
             <Link to="/"
               type="button"
               className="text-sm/6 font-semibold text-gray-900 cursor-pointer"
-              onClick={onCancel}
             >
               Cancel
             </Link>
@@ -91,10 +65,25 @@ function NewPost({ onCancel, onAddPost }) {
               Save
             </button>
           </div>
-        </form>
+        </Form>
       </div>
     </Modal>
   );
 }
 
 export default NewPost
+
+export async function submitPost({ request }) {
+  const formData = await request.formData()
+  const postData = Object.fromEntries(formData)
+
+  await fetch('http://localhost:8080/posts', {
+    method: 'POST',
+    body: JSON.stringify(postData),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+
+  return redirect('/')
+}
