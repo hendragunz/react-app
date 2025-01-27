@@ -1,10 +1,8 @@
 import { useState, useEffect } from "react";
 import { PostRecord } from "../types";
 import Post from "./Post";
-import Modal from "./Modal";
-import NewPost from "./NewPost";
 
-function PostList({ isPosting, onStopPosting }) {
+function PostList() {
   const [posts, setPosts] = useState<PostRecord[]>([]);
   const [isFetching, setIsFetching] = useState<Boolean>(false);
 
@@ -35,17 +33,6 @@ function PostList({ isPosting, onStopPosting }) {
 
   return (
     <>
-      {isPosting ? (
-        <Modal onClose={onStopPosting} >
-          <NewPost
-            onCancel={onStopPosting}
-            onAddPost={addPostHandler}
-          />
-        </Modal>
-      ) : null}
-
-      <hr />
-
       {!isFetching && posts.length > 0 && (
         <div className="grid grid-cols-4 gap-4 mt-5">
           {posts.map((post) => <Post key={post.id} name={post.name} something={post.something} />)}
