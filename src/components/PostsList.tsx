@@ -8,7 +8,7 @@ function PostList() {
     <>
       {posts.length > 0 && (
         <div className="grid grid-cols-4 gap-4 mt-5">
-          {posts.map((post) => <Post key={post.id} name={post.name} something={post.something} />)}
+          {posts.map((post) => <Post key={post.id} id={post.id} name={post.name} something={post.something} />)}
         </div>
       )}
 
